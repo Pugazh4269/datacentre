@@ -1,0 +1,36 @@
+services:
+  db:
+   image: "postgres:16"
+   environment:
+      - POSTGRES_PASSWORD=hunter2
+      - POSTGRES_USER=alex
+      - POSTGRES_DB=shelter
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_vol3:/var/lib/postgresql/data
+      - ./scripts/create_table.sql:/docker-entrypoint-initdb.d/create_table.sql
+
+  pipeline:
+    build: .
+    environment:
+      - WAREHOUSE_USER=alex
+      - WAREHOUSE_PASSWORD=hunter2
+      - WAREHOUSE_DB=shelter
+      - WAREHOUSE_HOST=db
+      - WAREHOUSE_PORT=5432
+    depends_on:
+      - db
+
+
+# services:
+#  web:
+#    build: .
+#    ports:
+#      - "8000:5000"
+#    volumes:
+#      - .:/code
+#    environment:
+#      FLASK_DEBUG: "true"
+#  redis:
+#    image: "redis:alpine"
